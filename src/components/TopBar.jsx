@@ -1,11 +1,12 @@
 import { initials } from '../lib/utils.js';
+import ncsLogo from '../assets/NCS_logo1.png';
 
 export default function TopBar({ me, showFilters, config, users, filters, onFilterChange, onClearFilters, onNewJob, onLogout }) {
   return (
     <header className="topbar">
       <div className="brand">
-        <div className="mark">NCS</div>
-        <div>NCS Operations System<div className="sub">v1 · React/Supabase</div></div>
+        <img src={ncsLogo} alt="NCS - National Claims Solutions" className="brand-logo" />
+        <div>National Claims Solutions<div className="sub">Operations Board</div></div>
       </div>
 
       <div className="filter-bar" style={{ display: showFilters ? '' : 'none' }}>

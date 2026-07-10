@@ -1,23 +1,24 @@
 /* ===========================================================================
    NCS Job Tracker - design tokens
-   Palette: warm "blueprint paper" background, ink navy for structure,
-   safety-orange accent (construction/restoration context), slate + gold +
-   green + red for priority/status signal. Monospace is used deliberately
-   for addresses and claim numbers - the "spec sheet" detail that gives the
-   board its own identity instead of looking like a generic Trello clone.
+   Brand palette: Charcoal Black (structure/ink), Gold (accent), White and
+   Light Gray (surfaces/borders). Slate + gold + green + red are kept as
+   functional priority/status signal colors, distinct from the brand accent.
+   Monospace is used deliberately for addresses and claim numbers - the
+   "spec sheet" detail that gives the board its own identity instead of
+   looking like a generic Trello clone.
    =========================================================================== */
 :root {
-  --ink: #1b2a33;
-  --ink-soft: #33454f;
-  --paper: #f6f3ec;
+  --ink: #1E1E1E;
+  --ink-soft: #3d3d3d;
+  --paper: #f4f4f4;
   --surface: #ffffff;
-  --line: #dfdaca;
-  --line-soft: #ebe7da;
-  --text: #21201b;
-  --text-muted: #6b6457;
+  --line: #D9D9D9;
+  --line-soft: #ececec;
+  --text: #1E1E1E;
+  --text-muted: #6b6b6b;
 
-  --accent: #e2641b;
-  --accent-soft: #fbe4d4;
+  --accent: #C8922A;
+  --accent-soft: #f3e4c6;
   --slate: #5b7a8c;
   --slate-soft: #e3ecef;
   --gold: #b8901f;
@@ -30,8 +31,8 @@
   --radius-sm: 4px;
   --radius: 8px;
   --radius-lg: 12px;
-  --shadow-card: 0 1px 2px rgba(27, 42, 51, 0.08), 0 1px 0 rgba(27, 42, 51, 0.04);
-  --shadow-pop: 0 12px 32px rgba(27, 42, 51, 0.22);
+  --shadow-card: 0 1px 2px rgba(30, 30, 30, 0.08), 0 1px 0 rgba(30, 30, 30, 0.04);
+  --shadow-pop: 0 12px 32px rgba(30, 30, 30, 0.22);
 
   --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
@@ -71,14 +72,14 @@ a { color: var(--ink); }
   transition: background 0.12s ease, border-color 0.12s ease, transform 0.05s ease;
   line-height: 1.2;
 }
-.btn:hover { border-color: var(--ink); }
+.btn:hover { border-color: var(--accent); }
 .btn:active { transform: translateY(1px); }
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
 }
-.btn-primary:hover { background: #c9540f; border-color: #c9540f; }
+.btn-primary:hover { background: #ad7a22; border-color: #ad7a22; }
 .btn-quiet {
   border-color: transparent;
   background: transparent;
@@ -115,9 +116,10 @@ textarea {
   background: var(--surface);
   color: var(--text);
 }
+select { color-scheme: light; }
 textarea { resize: vertical; min-height: 64px; }
 input:focus, select:focus, textarea:focus {
-  border-color: var(--ink);
+  border-color: var(--accent);
 }
 .field { margin-bottom: 14px; }
 .field-row { display: grid; gap: 14px; }
@@ -135,7 +137,7 @@ input:focus, select:focus, textarea:focus {
   justify-content: center;
   padding: 24px;
   background:
-    radial-gradient(circle at 10% 10%, rgba(226, 100, 27, 0.06), transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(200, 146, 42, 0.08), transparent 40%),
     var(--paper);
 }
 .login-card {
@@ -147,18 +149,10 @@ input:focus, select:focus, textarea:focus {
   padding: 32px 28px 28px;
   box-shadow: var(--shadow-card);
 }
-.login-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--ink);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 15px;
+.login-logo {
+  height: 72px;
+  width: auto;
+  display: block;
   margin-bottom: 16px;
 }
 .login-card h1 {
@@ -203,8 +197,9 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   gap: 16px;
   padding: 10px 18px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--surface);
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
 }
 .topbar .brand {
@@ -216,23 +211,18 @@ input:focus, select:focus, textarea:focus {
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
-.topbar .brand .mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
+.topbar .brand-logo {
+  height: 38px;
+  width: auto;
+  display: block;
 }
 .topbar .brand .sub {
-  font-weight: 400;
+  font-weight: 500;
   font-size: 11px;
-  color: rgba(255,255,255,0.55);
-  font-family: var(--font-mono);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .filter-bar {
@@ -244,18 +234,18 @@ input:focus, select:focus, textarea:focus {
 }
 .filter-bar input[type="search"],
 .filter-bar select {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: #fff;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--text);
   font-size: 13px;
   padding: 7px 10px;
 }
-.filter-bar input[type="search"]::placeholder { color: rgba(255,255,255,0.55); }
+.filter-bar input[type="search"]::placeholder { color: var(--text-muted); }
 .filter-bar input[type="search"] { min-width: 200px; }
-.filter-bar select { color-scheme: dark; }
+.filter-bar select { color-scheme: light; }
 .filter-bar .clear-filters {
   font-size: 12px;
-  color: rgba(255,255,255,0.7);
+  color: var(--text-muted);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -273,21 +263,21 @@ input:focus, select:focus, textarea:focus {
 .user-pill .avatar {
   width: 24px; height: 24px;
   border-radius: 50%;
-  background: var(--slate);
-  color: #fff;
+  background: var(--ink);
+  color: var(--accent);
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700;
 }
 .user-pill button {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.25);
-  color: #fff;
+  border: 1px solid var(--line);
+  color: var(--text);
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   font-size: 12px;
   cursor: pointer;
 }
-.user-pill button:hover { background: rgba(255,255,255,0.1); }
+.user-pill button:hover { background: var(--line-soft); }
 
 /* ===========================================================================
    Board
@@ -321,10 +311,11 @@ input:focus, select:focus, textarea:focus {
 }
 .column-headers .col-head .count {
   font-family: var(--font-mono);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 11px;
-  color: var(--text-muted);
-  background: var(--line-soft);
+  color: var(--ink);
+  background: var(--accent-soft);
+  border: 1px solid rgba(200,146,42,0.35);
   padding: 1px 6px;
   border-radius: 10px;
 }
@@ -398,7 +389,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: var(--shadow-card);
   transition: box-shadow 0.12s ease, transform 0.12s ease;
 }
-.job-card:hover { box-shadow: 0 4px 14px rgba(27,42,51,0.14); }
+.job-card:hover { box-shadow: 0 4px 14px rgba(30,30,30,0.14); }
 .job-card.dragging { opacity: 0.4; }
 .job-card.drop-indicator-before { box-shadow: 0 -3px 0 0 var(--accent); }
 .job-card.drop-indicator-after { box-shadow: 0 3px 0 0 var(--accent); }
@@ -443,11 +434,12 @@ input:focus, select:focus, textarea:focus {
 }
 .badge-low { background: var(--slate-soft); color: var(--slate); }
 .badge-medium { background: var(--gold-soft); color: var(--gold); }
-.badge-high { background: var(--accent-soft); color: #a8480f; }
+.badge-high { background: var(--accent-soft); color: #7a5810; }
 .badge-urgent { background: var(--danger-soft); color: var(--danger); }
 .badge-assignee {
   background: var(--line-soft);
   color: var(--ink-soft);
+  border: 1px solid rgba(200,146,42,0.25);
   text-transform: none;
   letter-spacing: 0;
   font-weight: 600;
@@ -455,6 +447,7 @@ input:focus, select:focus, textarea:focus {
 .badge-due {
   background: var(--line-soft);
   color: var(--ink-soft);
+  border: 1px solid rgba(200,146,42,0.25);
   text-transform: none;
   letter-spacing: 0;
   font-family: var(--font-mono);
@@ -474,7 +467,7 @@ input:focus, select:focus, textarea:focus {
    =========================================================================== */
 .modal-backdrop {
   position: fixed; inset: 0;
-  background: rgba(27, 42, 51, 0.45);
+  background: rgba(30, 30, 30, 0.45);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -654,7 +647,7 @@ input:focus, select:focus, textarea:focus {
   min-width: 78px;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
-.stat-chip:hover { border-color: var(--ink); }
+.stat-chip:hover { border-color: var(--accent); }
 .stat-chip.active { border-color: var(--accent); background: var(--accent-soft); }
 .stat-chip .stat-num {
   font-family: var(--font-mono);
@@ -741,7 +734,7 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   gap: 2px;
   padding: 0 18px;
-  background: #111e26;
+  background: var(--ink);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   overflow-x: auto;
   flex: none;
@@ -755,9 +748,9 @@ input:focus, select:focus, textarea:focus {
   font-weight: 600;
   color: rgba(255,255,255,0.6);
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   white-space: nowrap;
-  transition: color 0.12s ease, border-color 0.12s ease;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
   background: none;
   border-top: none;
   border-left: none;
@@ -767,7 +760,9 @@ input:focus, select:focus, textarea:focus {
 .nav-item:hover { color: rgba(255,255,255,0.9); }
 .nav-item.active {
   color: #fff;
+  font-weight: 700;
   border-bottom-color: var(--accent);
+  background: rgba(200,146,42,0.14);
 }
 .nav-item.coming-soon { opacity: 0.4; cursor: default; }
 .nav-item .nav-icon { font-size: 14px; }

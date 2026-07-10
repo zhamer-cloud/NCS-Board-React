@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { signIn } from '../lib/auth.js';
+import ncsLogo from '../assets/NCS_logo1.png';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -24,7 +25,7 @@ export default function Login() {
   return (
     <div className="login-shell">
       <form className="login-card" onSubmit={handleSubmit} autoComplete="on">
-        <div className="login-mark">NCS</div>
+        <img src={ncsLogo} alt="NCS - National Claims Solutions" className="login-logo" />
         <h1>NCS Boards</h1>
         <p className="sub">Sign in to view the Appraisal Board.</p>
 
