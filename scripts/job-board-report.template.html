@@ -1,0 +1,398 @@
+<title>NCS Job Board — Full Job List</title>
+<style>
+  :root {
+    --ink: #1E1E1E;
+    --ink-soft: #3d3d3d;
+    --paper: #f4f4f4;
+    --surface: #ffffff;
+    --line: #D9D9D9;
+    --line-soft: #ececec;
+    --text: #1E1E1E;
+    --text-muted: #6b6b6b;
+
+    --accent: #C8922A;
+    --accent-soft: #f3e4c6;
+    --good: #3f7a5a;
+    --good-soft: #dfeee5;
+    --danger: #b3261e;
+    --danger-soft: #f7dedc;
+    --slate: #5b7a8c;
+    --slate-soft: #e3ecef;
+
+    --prio-low: #5B7A8C;
+    --prio-medium: #C9A227;
+    --prio-high: #E2641B;
+    --prio-urgent: #B3261E;
+
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+    --radius-sm: 4px;
+    --radius: 8px;
+    --shadow-card: 0 1px 2px rgba(30, 30, 30, 0.08), 0 1px 0 rgba(30, 30, 30, 0.04);
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #f2f0ea;
+    --ink-soft: #cfcbc0;
+    --paper: #171613;
+    --surface: #201f1c;
+    --line: #3a3833;
+    --line-soft: #2a2925;
+    --text: #f2f0ea;
+    --text-muted: #a49e91;
+
+    --accent: #d9a53a;
+    --accent-soft: #3a2f18;
+    --good: #6fbf94;
+    --good-soft: #1c2f24;
+    --danger: #e2685f;
+    --danger-soft: #3a1e1b;
+    --slate: #8fb0c2;
+    --slate-soft: #202b30;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f2f0ea;
+      --ink-soft: #cfcbc0;
+      --paper: #171613;
+      --surface: #201f1c;
+      --line: #3a3833;
+      --line-soft: #2a2925;
+      --text: #f2f0ea;
+      --text-muted: #a49e91;
+
+      --accent: #d9a53a;
+      --accent-soft: #3a2f18;
+      --good: #6fbf94;
+      --good-soft: #1c2f24;
+      --danger: #e2685f;
+      --danger-soft: #3a1e1b;
+      --slate: #8fb0c2;
+      --slate-soft: #202b30;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-ui);
+    background: var(--paper);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    padding: 32px 20px 80px;
+  }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  header.masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 4px;
+  }
+  .masthead-left { display: flex; flex-direction: column; gap: 4px; }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .masthead-right {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+  .masthead-right .mono { color: var(--text); font-weight: 600; }
+
+  nav.jump {
+    display: flex;
+    gap: 8px;
+    margin: 20px 0 24px;
+    flex-wrap: wrap;
+  }
+  nav.jump a {
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 14px;
+    transition: border-color .12s ease, background .12s ease;
+  }
+  nav.jump a:hover { border-color: var(--accent); }
+  nav.jump a .count { color: var(--text-muted); margin-left: 4px; }
+
+  .search-row {
+    margin-bottom: 28px;
+  }
+  #search {
+    width: 100%;
+    max-width: 360px;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+  }
+  #search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  #search::placeholder { color: var(--text-muted); }
+
+  section.board { margin-bottom: 44px; scroll-margin-top: 16px; }
+
+  .board-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .board-head h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 800;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .board-head h2 .board-total { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+
+  .stat-strip { display: flex; gap: 18px; font-size: 12px; color: var(--text-muted); }
+  .stat-strip strong { color: var(--text); font-weight: 700; }
+  .stat-strip .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; position: relative; top: -1px; }
+  .dot-closed { background: var(--good); }
+  .dot-attn { background: var(--accent); }
+  .dot-urgent { background: var(--danger); }
+
+  .table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 880px;
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    background: var(--line-soft);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    color: var(--text);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--line-soft); }
+  tbody tr.hide { display: none; }
+
+  .c-id { white-space: nowrap; }
+  .c-id .mono { font-weight: 700; }
+  .c-name { font-weight: 600; min-width: 150px; }
+  .c-name .sub { display: block; font-weight: 400; color: var(--text-muted); font-size: 11.5px; margin-top: 1px; }
+  .c-addr { color: var(--text-muted); font-size: 12px; min-width: 200px; }
+  .c-assignee { white-space: nowrap; color: var(--text-muted); }
+  .c-update { min-width: 220px; color: var(--ink-soft); }
+  .c-date { white-space: nowrap; color: var(--text-muted); font-size: 12px; }
+
+  .prio-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 7px;
+    position: relative;
+    top: -1px;
+  }
+  .prio-low { background: var(--prio-low); }
+  .prio-medium { background: var(--prio-medium); }
+  .prio-high { background: var(--prio-high); }
+  .prio-urgent { background: var(--prio-urgent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--prio-urgent) 22%, transparent); }
+
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pill-st-closed { background: var(--good-soft); color: var(--good); }
+  .pill-st-attn { background: var(--accent-soft); color: var(--accent); }
+  .pill-st-active { background: var(--slate-soft); color: var(--slate); }
+
+  footer {
+    max-width: 1180px;
+    margin: 40px auto 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 20px 14px 60px; }
+    h1 { font-size: 21px; }
+    .masthead { flex-direction: column; }
+    .masthead-right { text-align: left; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="masthead-left">
+      <span class="eyebrow">NCS Operations · Supabase live pull</span>
+      <h1>Full Job List</h1>
+    </div>
+    <div class="masthead-right">
+      Snapshot taken <span class="mono">__TIMESTAMP__</span><br>
+      __TOTAL__ jobs across 3 boards
+    </div>
+  </header>
+
+  <nav class="jump">
+    <a href="#appraisal">Appraisal <span class="count">__APP_TOTAL__</span></a>
+    <a href="#estimate">Estimate <span class="count">__EST_TOTAL__</span></a>
+    <a href="#payment">Payment <span class="count">__PAY_TOTAL__</span></a>
+  </nav>
+
+  <div class="search-row">
+    <input id="search" type="text" placeholder="Filter by job ID, name, address, status…" autocomplete="off">
+  </div>
+
+  <section class="board" id="appraisal">
+    <div class="board-head">
+      <h2>Appraisal Board <span class="board-total">__APP_TOTAL__ jobs</span></h2>
+      <div class="stat-strip">
+        <span><span class="dot dot-closed"></span><strong>__APP_CLOSED__</strong> completed</span>
+        <span><span class="dot dot-attn"></span><strong>__APP_ATTN__</strong> need attention</span>
+        <span><span class="dot dot-urgent"></span><strong>__APP_URGENT__</strong> urgent</span>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Job ID</th>
+            <th>Client / Insured</th>
+            <th>Property Address</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Latest Update</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+__APPRAISAL_ROWS__
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="board" id="estimate">
+    <div class="board-head">
+      <h2>Estimate Board <span class="board-total">__EST_TOTAL__ jobs</span></h2>
+      <div class="stat-strip">
+        <span><span class="dot dot-closed"></span><strong>__EST_CLOSED__</strong> completed</span>
+        <span><span class="dot dot-attn"></span><strong>__EST_ATTN__</strong> need attention</span>
+        <span><span class="dot dot-urgent"></span><strong>__EST_URGENT__</strong> urgent</span>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Job ID</th>
+            <th>Job Category</th>
+            <th>Property Address</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Latest Update</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+__ESTIMATE_ROWS__
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="board" id="payment">
+    <div class="board-head">
+      <h2>Payment Board <span class="board-total">__PAY_TOTAL__ jobs</span></h2>
+      <div class="stat-strip">
+        <span><span class="dot dot-closed"></span><strong>__PAY_CLOSED__</strong> paid/closed</span>
+        <span><span class="dot dot-attn"></span><strong>__PAY_ATTN__</strong> need attention</span>
+        <span><span class="dot dot-urgent"></span><strong>__PAY_URGENT__</strong> urgent</span>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Job ID</th>
+            <th>Vendor</th>
+            <th>Property Address</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Latest Update</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+__PAYMENT_ROWS__
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Pulled read-only from Supabase (<span class="mono">cards</span> table) at <span class="mono">__TIMESTAMP__</span>. Static snapshot — re-run the export to refresh.
+  </footer>
+</div>
+
+<script>
+  document.getElementById('search').addEventListener('input', function (e) {
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('tbody tr').forEach(function (row) {
+      const hit = !q || row.dataset.search.includes(q);
+      row.classList.toggle('hide', !hit);
+    });
+  });
+</script>
