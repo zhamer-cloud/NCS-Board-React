@@ -9,6 +9,7 @@ import {
   fetchCard, createCard, updateCard, deleteCard,
   addNote, addAttachment, uploadAttachmentFile, getAttachmentSignedUrl
 } from '../lib/cardsApi.js';
+import { fetchTask, createTask, updateTask, deleteTask, addTaskNote } from '../lib/tasksApi.js';
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -57,17 +58,29 @@ function DetailsForm({ formRef, mode, config, card, createDefaults, users }) {
           </div>
         </div>
         <div className="field"><label htmlFor="f-assigned">Assigned To</label>
-          <input type="text" id="f-assigned" list="people-dl" defaultValue={vals?.assignedTo || ''} />
+          {config.assigneeOptions ? (
+            <select id="f-assigned" defaultValue={vals?.assignedTo || ''}>
+              <option value=""></option>
+              {config.assigneeOptions.map(n => <option value={n} key={n}>{n}</option>)}
+            </select>
+          ) : (
+            <input type="text" id="f-assigned" list="people-dl" defaultValue={vals?.assignedTo || ''} />
+          )}
         </div>
         <div className="field"><label htmlFor="f-nextstep">Next Step</label>
           <input type="text" id="f-nextstep" placeholder="What needs to happen next?" defaultValue={vals?.nextStep || ''} />
         </div>
-        <div className="field"><label htmlFor="f-latestupdate">Latest Update</label>
+        <div className="field"><label htmlFor="f-latestupdate">{config.latestUpdateLabel || 'Latest Update'}</label>
           <textarea id="f-latestupdate" placeholder="Short status summary..." defaultValue={vals?.latestUpdate || ''}></textarea>
         </div>
         {mode === 'edit' && (
           <div className="field"><label>Date Updated</label>
             <div className="field-hint" style={{ marginTop: 8 }}>{formatDateShort(card.dateUpdated)} — auto-set on every save</div>
+          </div>
+        )}
+        {mode === 'edit' && config.showDateCreated && (
+          <div className="field"><label>Date Created</label>
+            <div className="field-hint" style={{ marginTop: 8 }}>{formatDateShort((card.createdAt || '').slice(0, 10))}</div>
           </div>
         )}
       </div>
@@ -306,11 +319,17 @@ export default function CardModal({
   const [busy, setBusy] = useState(false);
   const formRef = useRef(null);
 
+  const isTask = boardConfig?.id === 'task';
+  const api = isTask
+    ? { fetchCard: fetchTask, createCard: createTask, updateCard: updateTask, deleteCard: deleteTask, addNote: addTaskNote }
+    : { fetchCard, createCard, updateCard, deleteCard, addNote };
+  const itemLabel = boardConfig?.itemLabel || 'job';
+
   useEffect(() => {
     setActiveTab('details');
     if (mode === 'edit' && cardId) {
       setCard(null);
-      fetchCard(boardConfig.id, cardId).then(setCard).catch(err => { toast(err.message, true); onClose(); });
+      api.fetchCard(boardConfig.id, cardId).then(setCard).catch(err => { toast(err.message, true); onClose(); });
     }
   }, [mode, cardId]);
 
@@ -322,7 +341,7 @@ export default function CardModal({
   }, [mode]);
 
   async function refreshCard() {
-    const updated = await fetchCard(boardConfig.id, cardId);
+    const updated = await api.fetchCard(boardConfig.id, cardId);
     setCard(updated);
     return updated;
   }
@@ -342,8 +361,8 @@ export default function CardModal({
     if (!vals.fields[titleField]) { toast(`${requiredLabel()} is required.`, true); return; }
     setBusy(true);
     try {
-      await createCard(boardConfig, vals, me.name);
-      toast('Job created.'); onClose(); onChanged();
+      await api.createCard(boardConfig, vals, me.name);
+      toast(`${itemLabel[0].toUpperCase()}${itemLabel.slice(1)} created.`); onClose(); onChanged();
     } catch (err) { toast(err.message, true); setBusy(false); }
   }
 
@@ -354,20 +373,20 @@ export default function CardModal({
     try {
       const move = vals.status !== card.status ? { status: vals.status } : null;
       const patch = { priority: vals.priority, assignedTo: vals.assignedTo, nextStep: vals.nextStep, latestUpdate: vals.latestUpdate, fields: vals.fields };
-      await updateCard(boardConfig, card.id, patch, move, me.name);
+      await api.updateCard(boardConfig, card.id, patch, move, me.name);
       toast('Saved.'); await refreshCard(); onChanged(); setBusy(false);
     } catch (err) { toast(err.message, true); setBusy(false); }
   }
 
   async function submitDelete() {
-    const t = card.fields?.[titleField] || 'this job';
+    const t = card.fields?.[titleField] || `this ${itemLabel}`;
     if (!window.confirm(`Delete "${t}"? This cannot be undone.`)) return;
-    try { await deleteCard(boardConfig, card.id); toast('Deleted.'); onClose(); onChanged(); }
+    try { await api.deleteCard(boardConfig, card.id); toast('Deleted.'); onClose(); onChanged(); }
     catch (err) { toast(err.message, true); }
   }
 
   async function handleAddNote(text) {
-    try { await addNote(boardConfig, card.id, text, me.name); await refreshCard(); onChanged(); }
+    try { await api.addNote(boardConfig, card.id, text, me.name); await refreshCard(); onChanged(); }
     catch (err) { toast(err.message, true); }
   }
 
@@ -402,12 +421,13 @@ export default function CardModal({
     return tabs;
   }
 
-  const title = isCreate ? 'New job' : (card.fields?.[titleField] || '(no title)');
+  const title = isCreate ? `New ${itemLabel}` : (card.fields?.[titleField] || '(no title)');
   const sub = isCreate
-    ? `Create a job on the ${boardConfig.label}`
+    ? `Create a ${itemLabel} on the ${boardConfig.label}`
     : `${card.jobId ? card.jobId + ' · ' : ''}${(boardConfig.columns.find(c => c.id === card.status) || {}).label || card.status}`;
 
-  const stdTabs = ['details', 'notes', 'attachments', 'activity'];
+  const hasAttachments = (boardConfig.attachmentCategories || []).length > 0;
+  const stdTabs = ['details', 'notes', ...(hasAttachments ? ['attachments'] : []), 'activity'];
   const extTabs = isCreate ? [] : extraTabs();
   const allTabs = [...stdTabs, ...extTabs.map(t => t.key)];
   const tabLabels = {
@@ -447,9 +467,11 @@ export default function CardModal({
               <div className={`tab-panel${activeTab === 'notes' ? ' active' : ''}`}>
                 <NotesPanel card={card} onAddNote={handleAddNote} />
               </div>
-              <div className={`tab-panel${activeTab === 'attachments' ? ' active' : ''}`}>
-                <AttachmentsPanel config={boardConfig} card={card} onAddLink={handleAddLink} onAddFile={handleAddFile} />
-              </div>
+              {hasAttachments && (
+                <div className={`tab-panel${activeTab === 'attachments' ? ' active' : ''}`}>
+                  <AttachmentsPanel config={boardConfig} card={card} onAddLink={handleAddLink} onAddFile={handleAddFile} />
+                </div>
+              )}
               <div className={`tab-panel${activeTab === 'activity' ? ' active' : ''}`}>
                 <ActivityPanel card={card} />
               </div>
@@ -478,12 +500,12 @@ export default function CardModal({
               <span></span>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="btn btn-quiet" onClick={onClose}>Cancel</button>
-                <button className="btn btn-primary" disabled={busy} onClick={submitCreate}>{busy ? 'Creating...' : 'Create job'}</button>
+                <button className="btn btn-primary" disabled={busy} onClick={submitCreate}>{busy ? 'Creating...' : `Create ${itemLabel}`}</button>
               </div>
             </>
           ) : (
             <>
-              <button className="btn btn-danger btn-sm" onClick={submitDelete}>Delete job</button>
+              <button className="btn btn-danger btn-sm" onClick={submitDelete}>Delete {itemLabel}</button>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="btn btn-quiet" onClick={onClose}>Close</button>
                 <button className="btn btn-primary" disabled={busy} onClick={submitSave}>{busy ? 'Saving...' : 'Save changes'}</button>

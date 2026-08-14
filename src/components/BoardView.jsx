@@ -10,6 +10,7 @@ function applyFilters(cards, filters) {
     if (filters.status && c.status !== filters.status) return false;
     if (filters.priority && c.priority !== filters.priority) return false;
     if (filters.assignee && c.assignedTo !== filters.assignee) return false;
+    if (filters.dueDate && c.fields?.dueDate !== filters.dueDate) return false;
     if (search) {
       const hay = [c.jobId, c.assignedTo, ...Object.values(c.fields || {})]
         .filter(Boolean).join(' ').toLowerCase();
@@ -34,12 +35,14 @@ export default function BoardView({ config, cards, filters, onCardClick, onCardM
 
   const filtered = applyFilters(cards, filters);
 
+  const itemLabel = config.itemLabel || 'job';
+
   if (!cards.length) {
     return (
       <main className="board-scroll" id="board-scroll">
         <div className="empty-board">
-          <p>No jobs yet. Create the first one to get started.</p>
-          <button className="btn btn-primary" onClick={() => onQuickAdd(config.columns[0].id)}>+ New job</button>
+          <p>No {itemLabel}s yet. Create the first one to get started.</p>
+          <button className="btn btn-primary" onClick={() => onQuickAdd(config.columns[0].id)}>+ New {itemLabel}</button>
         </div>
       </main>
     );
@@ -59,7 +62,7 @@ export default function BoardView({ config, cards, filters, onCardClick, onCardM
       </div>
 
       {!filtered.length ? (
-        <div className="empty-board"><p>No jobs match the current filters.</p></div>
+        <div className="empty-board"><p>No {itemLabel}s match the current filters.</p></div>
       ) : (
         <div className="board-columns">
           {config.columns.map(col => {

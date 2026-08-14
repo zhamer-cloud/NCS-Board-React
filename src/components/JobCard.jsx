@@ -1,4 +1,5 @@
 // JobCard.jsx — ported from the cardHtml() renderer in public/js/board.js.
+import { formatDateShort, isOverdue } from '../lib/utils.js';
 
 function prioMeta(cfg, id) {
   return cfg.priorities.find(p => p.id === id) || { id, label: id };
@@ -32,6 +33,10 @@ export default function JobCard({ card, config, dragging, onClick, onDragStart, 
     .filter(k => card.fields?.[k])
     .map(k => <span className="linked-id-badge" key={k}>↗ {card.fields[k]}</span>);
 
+  const isTaskBoard = config.id === 'task';
+  const dueDate = card.fields?.dueDate;
+  const overdue = isTaskBoard && isOverdue(dueDate, card.status, 'completed');
+
   function handleKeyDown(e) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); }
   }
@@ -55,6 +60,11 @@ export default function JobCard({ card, config, dragging, onClick, onDragStart, 
       <div className="tags">
         <span className={`badge badge-${prio.id}`}>{prio.label}</span>
         {card.assignedTo && <span className="badge badge-assignee">{card.assignedTo}</span>}
+        {isTaskBoard && dueDate && (
+          <span className={`badge-due${overdue ? ' overdue' : ''}`}>
+            {overdue ? '⚠ ' : ''}{formatDateShort(dueDate)}
+          </span>
+        )}
         {linkedBadges}
         {card._estimateCount != null && (
           <span className={`estimate-badge${card._estimateCount === 0 ? ' zero' : ''}`}>📋 {card._estimateCount}</span>

@@ -5,7 +5,7 @@ function fmtAmount(n) {
   return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export default function DashboardView({ data, onOpenBoard }) {
+export default function DashboardView({ data, taskSummary, onOpenBoard }) {
   if (!data) return <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading dashboard...</p>;
 
   return (
@@ -57,6 +57,23 @@ export default function DashboardView({ data, onOpenBoard }) {
             </div>
           );
         })}
+
+        {taskSummary && (
+          <div className="dash-board-card">
+            <div className="dbc-head">
+              <div className="dbc-title"><span>✅</span>TASK</div>
+              <span className="dbc-goto" onClick={() => onOpenBoard('task')}>Open →</span>
+            </div>
+            <div className="dbc-open">{taskSummary.open}</div>
+            <div className="dbc-open-label" style={{ marginBottom: 10 }}>open tasks</div>
+            <div className="dash-task-metrics">
+              <div className="pay-metric"><div className="pm-num">{taskSummary.open}</div><div className="pm-label">Open</div></div>
+              <div className="pay-metric"><div className="pm-num">{taskSummary.dueToday}</div><div className="pm-label">Due Today</div></div>
+              <div className="pay-metric"><div className="pm-num overdue">{taskSummary.overdue}</div><div className="pm-label">Overdue</div></div>
+              <div className="pay-metric"><div className="pm-num">{taskSummary.completed}</div><div className="pm-label">Completed</div></div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="dash-activity">

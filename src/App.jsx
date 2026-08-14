@@ -4,8 +4,10 @@ import { useEffect, useState, useCallback } from 'react';
 import { ToastProvider, useToast } from './components/Toast.jsx';
 import { getSession, onAuthStateChange, getMyProfile, listProfiles, signOut } from './lib/auth.js';
 import { list as listBoards, get as getBoard } from './boards/index.js';
+import taskBoard from './boards/task.js';
 import { PRIORITIES } from './config.js';
 import { fetchCardsForBoard, fetchBoardDashboard, fetchGlobalDashboard, updateCard, orderBetween } from './lib/cardsApi.js';
+import { fetchTasksForBoard, fetchTaskDashboard, fetchTaskSummary, updateTask } from './lib/tasksApi.js';
 import Login from './components/Login.jsx';
 import TopBar from './components/TopBar.jsx';
 import PrimaryNav from './components/PrimaryNav.jsx';
@@ -15,7 +17,8 @@ import BoardView from './components/BoardView.jsx';
 import ComingSoonView from './components/ComingSoonView.jsx';
 import CardModal from './components/CardModal.jsx';
 
-const EMPTY_FILTERS = { search: '', status: '', priority: '', assignee: '' };
+const EMPTY_FILTERS = { search: '', status: '', priority: '', assignee: '', dueDate: '' };
+const TASK_NAV_ENTRY = { id: taskBoard.id, label: taskBoard.label, description: taskBoard.description, navIcon: taskBoard.navIcon, comingSoon: false };
 
 function AppInner() {
   const toast = useToast();
@@ -31,6 +34,7 @@ function AppInner() {
   const [cards, setCards] = useState([]);
   const [dashboard, setDashboard] = useState({ totalOpen: 0, byStatus: {} });
   const [globalDashboard, setGlobalDashboard] = useState(null);
+  const [taskSummary, setTaskSummary] = useState(null);
   const [filters, setFilters] = useState(EMPTY_FILTERS);
 
   const [modal, setModal] = useState({ mode: null, cardId: null, createDefaults: null });
@@ -47,7 +51,7 @@ function AppInner() {
       try {
         const [profile, boards, allUsers] = await Promise.all([getMyProfile(), listBoards(), listProfiles()]);
         setMe(profile);
-        setBoardsList(boards);
+        setBoardsList([...boards, TASK_NAV_ENTRY]);
         setUsers(allUsers);
         const startBoard = new URLSearchParams(window.location.search).get('board');
         if (startBoard) await activateBoard(startBoard, boards);
@@ -63,8 +67,11 @@ function AppInner() {
     setActiveView('dashboard');
     const url = new URL(window.location); url.searchParams.delete('board');
     window.history.replaceState({}, '', url);
-    try { setGlobalDashboard(await fetchGlobalDashboard()); }
-    catch (err) { toast(err.message, true); }
+    try {
+      const [global, tasks] = await Promise.all([fetchGlobalDashboard(), fetchTaskSummary()]);
+      setGlobalDashboard(global);
+      setTaskSummary(tasks);
+    } catch (err) { toast(err.message, true); }
   }
 
   async function activateBoard(boardId, boardsOverride) {
@@ -78,12 +85,15 @@ function AppInner() {
     const url = new URL(window.location); url.searchParams.set('board', boardId);
     window.history.replaceState({}, '', url);
 
-    const bc = { ...getBoard(boardId), priorities: PRIORITIES };
+    const isTask = boardId === 'task';
+    const bc = isTask ? { ...taskBoard, priorities: PRIORITIES } : { ...getBoard(boardId), priorities: PRIORITIES };
     setConfig(bc);
     setFilters(EMPTY_FILTERS);
 
     try {
-      const [cardRows, dash] = await Promise.all([fetchCardsForBoard(boardId), fetchBoardDashboard(boardId)]);
+      const [cardRows, dash] = isTask
+        ? await Promise.all([fetchTasksForBoard(), fetchTaskDashboard(bc)])
+        : await Promise.all([fetchCardsForBoard(boardId), fetchBoardDashboard(boardId)]);
       setCards(cardRows);
       setDashboard(dash);
     } catch (err) {
@@ -101,14 +111,18 @@ function AppInner() {
   // ── data refresh ──────────────────────────────────────────────────────
   const refreshBoardData = useCallback(async () => {
     if (activeView !== 'board' || !activeBoardId) return;
+    const isTask = activeBoardId === 'task';
     try {
-      const [cardRows, dash] = await Promise.all([fetchCardsForBoard(activeBoardId), fetchBoardDashboard(activeBoardId)]);
+      const [cardRows, dash] = isTask
+        ? await Promise.all([fetchTasksForBoard(), fetchTaskDashboard(config)])
+        : await Promise.all([fetchCardsForBoard(activeBoardId), fetchBoardDashboard(activeBoardId)]);
       setCards(cardRows);
       setDashboard(dash);
     } catch (err) { toast(err.message, true); }
-  }, [activeView, activeBoardId]);
+  }, [activeView, activeBoardId, config]);
 
   async function handleCardMove(cardId, move) {
+    const isTask = activeBoardId === 'task';
     const before = move.beforeId ? cards.find(c => c.id === move.beforeId) : null;
     const after = move.afterId ? cards.find(c => c.id === move.afterId) : null;
     const order = orderBetween(after?.order, before?.order);
@@ -117,9 +131,10 @@ function AppInner() {
     setCards(prev => prev.map(c => c.id === cardId ? { ...c, status: move.status, order } : c));
 
     try {
-      const updated = await updateCard(config, cardId, {}, { status: move.status, order }, me.name);
+      const updateFn = isTask ? updateTask : updateCard;
+      const updated = await updateFn(config, cardId, {}, { status: move.status, order }, me.name);
       setCards(prev => prev.map(c => c.id === cardId ? updated : c));
-      setDashboard(await fetchBoardDashboard(activeBoardId));
+      setDashboard(isTask ? await fetchTaskDashboard(config) : await fetchBoardDashboard(activeBoardId));
     } catch (err) {
       toast(err.message, true);
       setCards(prev => prev.map(c => c.id === cardId ? { ...c, status: prevStatus } : c));
@@ -167,7 +182,7 @@ function AppInner() {
 
       <div className="content-area">
         <div className={`view${activeView === 'dashboard' ? ' active' : ''}`} id="view-dashboard">
-          <DashboardView data={globalDashboard} onOpenBoard={activateBoard} />
+          <DashboardView data={globalDashboard} taskSummary={taskSummary} onOpenBoard={activateBoard} />
         </div>
 
         <div className={`view board-view${activeView === 'board' ? ' active' : ''}`} id="view-board">

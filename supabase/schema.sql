@@ -116,6 +116,40 @@ revoke all on function public.next_job_id(text) from public;
 grant execute on function public.next_job_id(text) to authenticated;
 
 -- ============================================================================
+-- tasks — internal team task tracking (Louie / Zack / Jobe), separate from
+-- the job-tracking "cards" table above by design: different status/assignee
+-- vocabulary, no jobs/fields/attachments involved. Uses the same
+-- next_job_id() function (already generic on prefix) to mint TASK-0001 style
+-- ids, so no changes to that function or to the cards table were needed.
+-- ============================================================================
+create table if not exists public.tasks (
+  id uuid primary key default gen_random_uuid(),
+  task_id text,
+  title text not null,
+  assignee text not null check (assignee in ('Louie', 'Zack', 'Jobe')),
+  priority text not null default 'medium' check (priority in ('low', 'medium', 'high', 'urgent')),
+  status text not null default 'to_do' check (status in ('to_do', 'in_progress', 'waiting', 'completed')),
+  due_date date,
+  description text not null default '',
+  next_step text not null default '',
+  notes jsonb not null default '[]'::jsonb,
+  activity jsonb not null default '[]'::jsonb,
+  "order" numeric not null default 1000,
+  created_by text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists tasks_status_idx on public.tasks (status);
+create unique index if not exists tasks_task_id_idx on public.tasks (task_id) where task_id is not null;
+
+alter table public.tasks enable row level security;
+
+drop policy if exists "tasks_all_authenticated" on public.tasks;
+create policy "tasks_all_authenticated" on public.tasks
+  for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+-- ============================================================================
 -- Storage — private "attachments" bucket for file uploads (replaces the old
 -- local /uploads + multer). The app requests short-lived signed URLs to
 -- display/download files rather than relying on a public bucket.
