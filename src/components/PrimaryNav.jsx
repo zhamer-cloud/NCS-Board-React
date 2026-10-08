@@ -16,6 +16,10 @@ export default function PrimaryNav({ boardsList, activeView, activeBoardId, onSe
           </button>
         );
       })}
+      {/* The Time Tracker is a separate site that shares this board's Supabase login. */}
+      <a className="nav-item" href="https://ncs-timetracker.netlify.app" target="_blank" rel="noopener">
+        <span className="nav-icon">⏱️</span>Time Tracker
+      </a>
     </nav>
   );
 }
