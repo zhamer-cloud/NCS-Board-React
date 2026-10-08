@@ -27,15 +27,67 @@
   --good-soft: #dfeee5;
   --danger: #b3261e;
   --danger-soft: #f7dedc;
+  --violet: #5c2a76;
+  --violet-soft: #ede3ef;
+
+  /* Text colours for small labels on the soft backgrounds above. */
+  --accent-text: #7a5810;
+  --slate-text: #2a5e76;
+  --good-text: #285a3e;
+  /* Text on the gold accent, the always-dark bars, the column wells and the modal backdrop. */
+  --accent-ink: #1E1E1E;
+  --chrome: #1E1E1E;
+  --column: rgba(223, 218, 202, 0.35);
+  --backdrop: rgba(30, 30, 30, 0.45);
 
   --radius-sm: 4px;
   --radius: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 8px;
   --shadow-card: 0 1px 2px rgba(30, 30, 30, 0.08), 0 1px 0 rgba(30, 30, 30, 0.04);
   --shadow-pop: 0 12px 32px rgba(30, 30, 30, 0.22);
 
   --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color-scheme: light;
+}
+
+/* Dark theme: the same values as the Time Tracker, used when the device is set to dark. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f2f0ea;
+    --ink-soft: #cfcbc0;
+    --paper: #171613;
+    --surface: #201f1c;
+    --line: #3a3833;
+    --line-soft: #2a2925;
+    --text: #f2f0ea;
+    --text-muted: #a49e91;
+
+    --accent: #d9a53a;
+    --accent-soft: #3a2f18;
+    --slate: #8fb0c2;
+    --slate-soft: #202b30;
+    --gold: #d9b84a;
+    --gold-soft: #33290f;
+    --good: #6fbf94;
+    --good-soft: #1c2f24;
+    --danger: #e2685f;
+    --danger-soft: #3a1e1b;
+    --violet: #c9a3dc;
+    --violet-soft: #2c2030;
+
+    --accent-text: #e3b85c;
+    --slate-text: #8fb0c2;
+    --good-text: #6fbf94;
+    --accent-ink: #171613;
+    --chrome: #100f0d;
+    --column: rgba(255, 255, 255, 0.035);
+    --backdrop: rgba(0, 0, 0, 0.6);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -77,9 +129,10 @@ a { color: var(--ink); }
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
+  font-weight: 700;
 }
-.btn-primary:hover { background: #ad7a22; border-color: #ad7a22; }
+.btn-primary:hover { filter: brightness(0.92); }
 .btn-quiet {
   border-color: transparent;
   background: transparent;
@@ -93,11 +146,11 @@ a { color: var(--ink); }
 /* ---------- form fields ---------- */
 label {
   display: block;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   margin-bottom: 4px;
 }
 input[type="text"],
@@ -116,7 +169,6 @@ textarea {
   background: var(--surface);
   color: var(--text);
 }
-select { color-scheme: light; }
 textarea { resize: vertical; min-height: 64px; }
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
@@ -205,24 +257,26 @@ input:focus, select:focus, textarea:focus {
 .topbar .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 15px;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 20px;
   letter-spacing: -0.01em;
+  line-height: 1.15;
   white-space: nowrap;
 }
 .topbar .brand-logo {
-  height: 38px;
+  height: 40px;
   width: auto;
   display: block;
 }
 .topbar .brand .sub {
-  font-weight: 500;
+  font-weight: 700;
   font-size: 11px;
-  color: var(--accent);
+  color: var(--accent-text);
   font-family: var(--font-ui);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  margin-bottom: 3px;
 }
 
 .filter-bar {
@@ -233,7 +287,11 @@ input:focus, select:focus, textarea:focus {
   flex-wrap: wrap;
 }
 .filter-bar input[type="search"],
+.filter-bar input[type="date"],
 .filter-bar select {
+  width: auto;
+  flex: 1 1 140px;
+  max-width: 200px;
   background: var(--paper);
   border: 1px solid var(--line);
   color: var(--text);
@@ -241,8 +299,7 @@ input:focus, select:focus, textarea:focus {
   padding: 7px 10px;
 }
 .filter-bar input[type="search"]::placeholder { color: var(--text-muted); }
-.filter-bar input[type="search"] { min-width: 200px; }
-.filter-bar select { color-scheme: light; }
+.filter-bar input[type="search"] { min-width: 200px; flex: 2 1 220px; max-width: 320px; }
 .filter-bar .clear-filters {
   font-size: 12px;
   color: var(--text-muted);
@@ -263,7 +320,7 @@ input:focus, select:focus, textarea:focus {
 .user-pill .avatar {
   width: 24px; height: 24px;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--chrome);
   color: var(--accent);
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700;
@@ -357,7 +414,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .column-drop {
-  background: rgba(223, 218, 202, 0.35);
+  background: var(--column);
   border: 1px dashed transparent;
   border-radius: var(--radius);
   padding: 6px;
@@ -434,7 +491,7 @@ input:focus, select:focus, textarea:focus {
 }
 .badge-low { background: var(--slate-soft); color: var(--slate); }
 .badge-medium { background: var(--gold-soft); color: var(--gold); }
-.badge-high { background: var(--accent-soft); color: #7a5810; }
+.badge-high { background: var(--accent-soft); color: var(--accent-text); }
 .badge-urgent { background: var(--danger-soft); color: var(--danger); }
 .badge-assignee {
   background: var(--line-soft);
@@ -467,7 +524,7 @@ input:focus, select:focus, textarea:focus {
    =========================================================================== */
 .modal-backdrop {
   position: fixed; inset: 0;
-  background: rgba(30, 30, 30, 0.45);
+  background: var(--backdrop);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -584,7 +641,7 @@ input:focus, select:focus, textarea:focus {
   bottom: 18px; left: 50%;
   transform: translateX(-50%);
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
   padding: 9px 16px;
   border-radius: var(--radius-sm);
   font-size: 13px;
@@ -595,7 +652,7 @@ input:focus, select:focus, textarea:focus {
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
-.toast.error { background: var(--danger); }
+.toast.error { background: var(--danger); color: var(--surface); }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px;
@@ -664,12 +721,14 @@ input:focus, select:focus, textarea:focus {
   white-space: nowrap;
 }
 .stat-chip.total {
-  border-color: var(--ink);
-  background: var(--ink);
+  border-color: var(--chrome);
+  background: var(--chrome);
 }
 .stat-chip.total .stat-num,
 .stat-chip.total .stat-label { color: #fff; }
 .stat-chip.total.active { background: var(--accent); border-color: var(--accent); }
+.stat-chip.total.active .stat-num,
+.stat-chip.total.active .stat-label { color: var(--accent-ink); }
 
 /* single-lane board (no swimlanes) */
 .board-columns {
@@ -734,7 +793,7 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   gap: 2px;
   padding: 0 18px;
-  background: var(--ink);
+  background: var(--chrome);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   overflow-x: auto;
   flex: none;
@@ -769,7 +828,7 @@ a.nav-item { text-decoration: none; }
 .nav-item .nav-icon { font-size: 14px; }
 .nav-item .nav-badge {
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
   font-size: 10px;
   font-weight: 700;
   padding: 1px 5px;
@@ -790,9 +849,9 @@ a.nav-item { text-decoration: none; }
 }
 .dashboard-view h1 {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0 0 4px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 .dashboard-view .subtitle {
   font-size: 13px;
@@ -956,8 +1015,8 @@ a.nav-item { text-decoration: none; }
   margin-bottom: 4px;
   display: inline-block;
 }
-.job-id-badge.app { border-color: #a8c5d4; background: #e3ecef; color: #2a5e76; }
-.job-id-badge.est { border-color: #c4b47a; background: #f6ecd1; color: #7a5d0f; }
+.job-id-badge.app { border-color: color-mix(in srgb, var(--slate) 40%, transparent); background: var(--slate-soft); color: var(--slate-text); }
+.job-id-badge.est { border-color: color-mix(in srgb, var(--gold) 40%, transparent); background: var(--gold-soft); color: var(--accent-text); }
 
 /* estimate count badge on appraisal cards */
 .estimate-badge {
@@ -1066,9 +1125,9 @@ a.nav-item { text-decoration: none; }
 .payment-badge {
   font-size: 10.5px;
   font-weight: 700;
-  background: #f6ecd1;
-  color: #7a5d0f;
-  border: 1px solid rgba(184,144,31,0.35);
+  background: var(--gold-soft);
+  color: var(--accent-text);
+  border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
   padding: 1px 7px;
   border-radius: 999px;
   display: inline-flex;
@@ -1078,7 +1137,7 @@ a.nav-item { text-decoration: none; }
 .payment-badge.zero { background: var(--line-soft); color: var(--text-muted); border-color: var(--line); }
 
 /* PAY-XXXX Job ID badge */
-.job-id-badge.pay { border-color: #a8c4b4; background: var(--good-soft); color: #285a3e; }
+.job-id-badge.pay { border-color: color-mix(in srgb, var(--good) 40%, transparent); background: var(--good-soft); color: var(--good-text); }
 
 /* Dashboard payment metrics row */
 .dash-payment-metrics {
@@ -1155,7 +1214,7 @@ a.nav-item { text-decoration: none; }
    =========================================================================== */
 
 /* TASK-XXXX Job ID badge */
-.job-id-badge.task { border-color: #c6a8d4; background: #ede3ef; color: #5c2a76; }
+.job-id-badge.task { border-color: color-mix(in srgb, var(--violet) 40%, transparent); background: var(--violet-soft); color: var(--violet); }
 
 /* Dashboard TASK summary tile metrics row (mirrors .dash-payment-metrics) */
 .dash-task-metrics {

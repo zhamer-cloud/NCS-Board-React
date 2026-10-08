@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { signIn } from '../lib/auth.js';
-import ncsLogo from '../assets/NCS_logo1.png';
+import ncsLogo from '../assets/ncs-logo.png';
 
 export default function Login() {
   const [username, setUsername] = useState('');
