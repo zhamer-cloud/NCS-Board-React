@@ -11,6 +11,7 @@ export default {
     { id: 'waiting_information', label: 'Waiting Information' },
     { id: 'in_review',           label: 'In Review' },
     { id: 'estimating',          label: 'Estimating' },
+    { id: 'settlement_proposed', label: 'Settlement Proposed' },
     { id: 'submitted',           label: 'Submitted' },
     { id: 'waiting_response',    label: 'Waiting Response' },
     { id: 'completed',           label: 'Completed' },
