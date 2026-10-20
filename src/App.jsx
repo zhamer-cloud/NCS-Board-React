@@ -14,6 +14,7 @@ import PrimaryNav from './components/PrimaryNav.jsx';
 import DashboardView from './components/DashboardView.jsx';
 import DashboardStrip from './components/DashboardStrip.jsx';
 import BoardView from './components/BoardView.jsx';
+import PriorityPanel from './components/PriorityPanel.jsx';
 import ComingSoonView from './components/ComingSoonView.jsx';
 import CardModal from './components/CardModal.jsx';
 
@@ -141,6 +142,30 @@ function AppInner() {
     }
   }
 
+  // Priority list (TASK board). Moves one open task up/down, then renumbers the
+  // open tasks 1000, 2000, ... in list order and saves only the ones that changed.
+  // Uses the existing "order" column, so column order on the board follows it too.
+  async function handlePriorityMove(taskId, dir) {
+    const list = cards
+      .filter(c => c.status !== 'completed')
+      .sort((a, b) => (a.order - b.order) || String(a.jobId).localeCompare(String(b.jobId)));
+    const i = list.findIndex(c => c.id === taskId);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    const changes = list
+      .map((c, idx) => ({ id: c.id, status: c.status, order: (idx + 1) * 1000 }))
+      .filter(n => cards.find(c => c.id === n.id).order !== n.order);
+    const prevCards = cards;
+    setCards(prev => prev.map(c => { const n = changes.find(x => x.id === c.id); return n ? { ...c, order: n.order } : c; }));
+    try {
+      await Promise.all(changes.map(n => updateTask(config, n.id, {}, { status: n.status, order: n.order }, me.name)));
+    } catch (err) {
+      toast(err.message, true);
+      setCards(prevCards);
+    }
+  }
+
   // ── modal ───────────────────────────────────────────────────────────────
   function openCreate(defaults) { setModal({ mode: 'create', cardId: null, createDefaults: defaults || {} }); }
   function openEdit(cardId) { setModal({ mode: 'edit', cardId, createDefaults: null }); }
@@ -192,12 +217,24 @@ function AppInner() {
                 config={config} dashboard={dashboard} filters={filters}
                 onToggleStatus={s => setFilters(f => ({ ...f, status: f.status === s ? '' : s }))}
               />
-              <BoardView
-                config={config} cards={cards} filters={filters}
-                onCardClick={openEdit}
-                onCardMove={handleCardMove}
-                onQuickAdd={status => openCreate({ status })}
-              />
+              {activeBoardId === 'task' ? (
+                <div className="board-with-side">
+                  <BoardView
+                    config={config} cards={cards} filters={filters}
+                    onCardClick={openEdit}
+                    onCardMove={handleCardMove}
+                    onQuickAdd={status => openCreate({ status })}
+                  />
+                  <PriorityPanel tasks={cards} onMove={handlePriorityMove} onOpen={openEdit} />
+                </div>
+              ) : (
+                <BoardView
+                  config={config} cards={cards} filters={filters}
+                  onCardClick={openEdit}
+                  onCardMove={handleCardMove}
+                  onQuickAdd={status => openCreate({ status })}
+                />
+              )}
             </>
           )}
         </div>
