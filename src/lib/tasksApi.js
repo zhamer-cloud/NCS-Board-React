@@ -68,7 +68,10 @@ export async function fetchTaskSummary() {
     if (due === today) dueToday++;
     else if (isOverdue(due, t.status, 'completed')) overdue++;
   });
-  return { open, dueToday, overdue, completed };
+  const openTasks = tasks.filter(t => t.status !== 'completed')
+    .sort((x, y) => (x.order || 0) - (y.order || 0))
+    .map(t => ({ id: t.id, jobId: t.jobId, title: t.fields?.title || '', dueDate: t.fields?.dueDate || '', status: t.status, priority: t.priority, assignedTo: t.assignedTo }));
+  return { open, dueToday, overdue, completed, openTasks };
 }
 
 export async function fetchTask(_boardId, id) {
