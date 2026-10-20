@@ -1,11 +1,14 @@
 import { initials } from '../lib/utils.js';
 import ncsLogo from '../assets/ncs-logo.png';
+import '../styles/brand-link.css';
 
-export default function TopBar({ me, showFilters, config, users, filters, onFilterChange, onClearFilters, onNewJob, onLogout }) {
+export default function TopBar({ me, showFilters, config, users, filters, onFilterChange, onClearFilters, onNewJob, onLogout, onLogoClick }) {
   return (
     <header className="topbar">
       <div className="brand">
-        <img src={ncsLogo} alt="NCS - National Claims Solutions" className="brand-logo" />
+        <button type="button" className="brand-logo-link" onClick={onLogoClick} title="Go to Dashboard" aria-label="Go to Dashboard">
+          <img src={ncsLogo} alt="NCS - National Claims Solutions" className="brand-logo" />
+        </button>
         <div><div className="sub">NCS Operations</div>Operations Board</div>
       </div>
 
