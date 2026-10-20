@@ -13,6 +13,8 @@ export default function DashboardView({ data, taskSummary, onOpenBoard }) {
       <h1>NCS Operations System</h1>
       <p className="subtitle">Overview across all boards</p>
 
+      <div className="dash-layout">
+      <div className="dash-main">
       <div className="dash-grid">
         {data.boards.map(b => {
           const maxCount = Math.max(1, ...Object.values(b.byStatus || {}));
@@ -74,6 +76,27 @@ export default function DashboardView({ data, taskSummary, onOpenBoard }) {
             </div>
           </div>
         )}
+      </div>
+      </div>
+      {taskSummary && (
+        <aside className="dash-tasks">
+          <div className="dash-tasks-head"><h2>Open Tasks</h2><span className="dbc-goto" onClick={() => onOpenBoard('task')}>Open →</span></div>
+          {taskSummary.openTasks && taskSummary.openTasks.length
+            ? taskSummary.openTasks.map(t => {
+              const overdue = t.dueDate && t.dueDate < new Date().toISOString().slice(0, 10);
+              return (
+                <div className="dash-task-row" key={t.id} onClick={() => onOpenBoard('task')}>
+                  <div className="dt-title">{t.title || t.jobId}</div>
+                  <div className="dt-meta">
+                    <span className={overdue ? 'dt-due overdue' : 'dt-due'}>{t.dueDate ? 'Due ' + t.dueDate : 'No due date'}</span>
+                    <span className="dt-status">{(t.status || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
+                  </div>
+                </div>
+              );
+            })
+            : <div className="thread-empty">No open tasks.</div>}
+        </aside>
+      )}
       </div>
 
       <div className="dash-activity">
