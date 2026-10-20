@@ -197,6 +197,7 @@ function AppInner() {
         onClearFilters={() => setFilters(EMPTY_FILTERS)}
         onNewJob={() => openCreate({ status: config?.columns[0]?.id })}
         onLogout={handleLogout}
+        onLogoClick={activateDashboard}
       />
 
       <PrimaryNav
