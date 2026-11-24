@@ -55,7 +55,7 @@ function AppInner() {
         setBoardsList([...boards, TASK_NAV_ENTRY]);
         setUsers(allUsers);
         const startBoard = new URLSearchParams(window.location.search).get('board');
-        if (startBoard) { await activateBoard(startBoard, boards); try { const [g, t] = await Promise.all([fetchGlobalDashboard(), fetchTaskSummary()]); setGlobalDashboard(g); setTaskSummary(t); } catch (e) { /* dashboard data loads on demand */ } }
+        if (startBoard) { await activateBoard(startBoard, [...boards, TASK_NAV_ENTRY]); try { const [g, t] = await Promise.all([fetchGlobalDashboard(), fetchTaskSummary()]); setGlobalDashboard(g); setTaskSummary(t); } catch (e) { /* dashboard data loads on demand */ } }
         else await activateDashboard();
       } catch (err) {
         toast(err.message, true);
@@ -198,6 +198,7 @@ function AppInner() {
         onClearFilters={() => setFilters(EMPTY_FILTERS)}
         onNewJob={() => openCreate({ status: config?.columns[0]?.id })}
         onLogout={handleLogout}
+        onHome={activateDashboard}
       />
 
       <PrimaryNav
