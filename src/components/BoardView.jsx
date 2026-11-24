@@ -4,10 +4,20 @@
 import { useState } from 'react';
 import JobCard from './JobCard.jsx';
 
-function applyFilters(cards, filters) {
+function applyFilters(cards, filters, config) {
   const search = (filters.search || '').trim().toLowerCase();
   return cards.filter(c => {
     if (filters.status && c.status !== filters.status) return false;
+    if (filters.bucket) {
+      const closed = (config.closedStatuses || []);
+      const today = new Date().toISOString().slice(0, 10);
+      const due = c.fields?.dueDate;
+      if (filters.bucket === 'open' && closed.includes(c.status)) return false;
+      if (filters.bucket === 'outstanding' && ['paid', 'closed'].includes(c.status)) return false;
+      if (filters.bucket === 'due_today' && (closed.includes(c.status) || due !== today)) return false;
+      if (filters.bucket === 'overdue' && (closed.includes(c.status) || !due || due >= today)) return false;
+      if (filters.bucket === 'paid_month' && !(c.status === 'paid' && (c.fields?.datePaid || '').startsWith(today.slice(0, 7)))) return false;
+    }
     if (filters.priority && c.priority !== filters.priority) return false;
     if (filters.assignee && c.assignedTo !== filters.assignee) return false;
     if (filters.dueDate && c.fields?.dueDate !== filters.dueDate) return false;
@@ -33,7 +43,7 @@ export default function BoardView({ config, cards, filters, onCardClick, onCardM
   const [draggingId, setDraggingId] = useState(null);
   const [dragOverCol, setDragOverCol] = useState(null);
 
-  const filtered = applyFilters(cards, filters);
+  const filtered = applyFilters(cards, filters, config);
 
   const itemLabel = config.itemLabel || 'job';
 
