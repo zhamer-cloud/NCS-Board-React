@@ -42,3 +42,11 @@
 
   .modal-backdrop { align-items: flex-start; overflow-y: auto; }
 }
+
+/* Done checkbox (TASK board) */
+.job-card { position: relative; }
+.done-check { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.done-check input { width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent, #c8962e); }
+.job-card .done-check { position: absolute; top: 6px; right: 6px; width: 32px; height: 32px; }
+.done-check.inline { flex: none; width: 34px; height: 34px; }
+.job-card .address { padding-right: 34px; }
