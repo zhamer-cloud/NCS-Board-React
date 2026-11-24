@@ -15,6 +15,7 @@ import DashboardView from './components/DashboardView.jsx';
 import DashboardStrip from './components/DashboardStrip.jsx';
 import BoardView from './components/BoardView.jsx';
 import PriorityPanel from './components/PriorityPanel.jsx';
+import './styles/mobile.css';
 import ComingSoonView from './components/ComingSoonView.jsx';
 import CardModal from './components/CardModal.jsx';
 
