@@ -1,10 +1,10 @@
 import { initials } from '../lib/utils.js';
 import ncsLogo from '../assets/ncs-logo.png';
 
-export default function TopBar({ me, showFilters, config, users, filters, onFilterChange, onClearFilters, onNewJob, onLogout }) {
+export default function TopBar({ me, showFilters, config, users, filters, onFilterChange, onClearFilters, onNewJob, onLogout, onHome }) {
   return (
     <header className="topbar">
-      <div className="brand">
+      <div className="brand" onClick={onHome} role="link" tabIndex={0} title="Go to Dashboard" style={{ cursor: 'pointer' }} onKeyDown={e => { if (e.key === 'Enter') onHome && onHome(); }}>
         <img src={ncsLogo} alt="NCS - National Claims Solutions" className="brand-logo" />
         <div><div className="sub">NCS Operations</div>Operations Board</div>
       </div>
