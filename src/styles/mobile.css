@@ -38,6 +38,9 @@
   .priority-body { min-height: 34px; justify-content: center; }
 
   .board-with-side .column-headers { display: none; }
+  .board-with-side .col-mobile-head { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 4; background: var(--paper, #f4f4f4); padding: 8px 4px 6px; font-size: 13px; font-weight: 800; color: var(--ink, #222); border-bottom: 2px solid var(--accent, #c8962e); }
+  .board-with-side .col-mobile-head .count { font-weight: 700; background: var(--accent-soft, #f3e3bd); border-radius: 999px; padding: 1px 9px; }
+  .board-with-side .board-columns { gap: 14px; }
   .board-with-side .board-columns { display: flex; flex-direction: column; gap: 6px; }
   .board-with-side .column-drop { background: none; padding: 0; min-height: 0; gap: 6px; }
   .board-with-side .column-drop .empty-slot { display: none; }
@@ -50,6 +53,8 @@
 
   .modal-backdrop { align-items: flex-start; overflow-y: auto; }
 }
+
+.col-mobile-head { display: none; }
 
 /* Done checkbox (TASK board) */
 .job-card { position: relative; }
