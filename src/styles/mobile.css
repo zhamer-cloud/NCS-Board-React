@@ -1,0 +1,44 @@
+/* Phone layout (<= 768px). Desktop is unchanged. */
+.priority-toggle { width: 100%; background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: inherit; text-align: left; }
+.priority-open { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--accent-text, #7a5b00); }
+
+@media (max-width: 768px) {
+  .app-shell { height: 100vh; height: 100dvh; }
+  .topbar { padding: 6px 10px; gap: 6px; }
+  .topbar .brand { font-size: 15px; gap: 8px; }
+  .topbar .brand-logo { height: 28px; width: auto; }
+  .filter-bar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
+  .filter-bar input[type="search"] { grid-column: 1 / -1; min-width: 0; max-width: none; }
+  .filter-bar select, .filter-bar input[type="date"] { min-width: 0; width: 100%; padding: 5px 6px; }
+
+  .dashboard-strip { padding: 6px 8px; gap: 6px; -webkit-overflow-scrolling: touch; }
+  .stat-chip { flex: none; padding: 5px 10px; }
+
+  /* TASK board: stack the priority list above the board, board as one vertical list */
+  .board-with-side { flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .board-with-side .board-scroll { flex: none; overflow: visible; padding: 8px 10px 40px; }
+  .priority-panel { width: 100%; flex: none; max-height: 55vh; border-left: 0; border-bottom: 1px solid var(--line); padding: 10px 12px; }
+  .priority-panel.collapsed { max-height: none; padding: 8px 12px; }
+  .priority-hint { margin-bottom: 8px; }
+  .priority-item { padding: 6px 8px; }
+  .priority-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .priority-item.expanded .priority-title { white-space: normal; overflow: visible; }
+  .priority-meta { display: none; }
+  .priority-item.expanded .priority-meta { display: block; }
+  .priority-arrows { flex-direction: row; }
+  .priority-arrows .btn { min-width: 34px; min-height: 34px; }
+  .priority-body { min-height: 34px; justify-content: center; }
+
+  .board-with-side .column-headers { display: none; }
+  .board-with-side .board-columns { display: flex; flex-direction: column; gap: 6px; }
+  .board-with-side .column-drop { background: none; padding: 0; min-height: 0; gap: 6px; }
+  .board-with-side .column-drop .empty-slot { display: none; }
+  .board-with-side .job-card { padding: 8px 10px; }
+  .board-with-side .job-card .address { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+  .board-with-side .job-card .job-id-badge { display: inline-block; margin-right: 6px; }
+  .board-with-side .job-card .meta-line { display: none; }
+  .board-with-side .job-card .tags { margin-top: 4px; }
+  .board-with-side .job-card .tags .badge-assignee { display: none; }
+
+  .modal-backdrop { align-items: flex-start; overflow-y: auto; }
+}
