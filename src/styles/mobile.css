@@ -8,7 +8,8 @@
   .topbar .brand { font-size: 15px; gap: 8px; }
   .topbar .brand-logo { height: 28px; width: auto; }
   .topbar { display: flex; flex-wrap: wrap; align-items: center; }
-  .topbar .brand { flex: 1; }
+  .topbar .brand { flex: 1 1 auto; min-width: 0; }
+  .topbar .user-pill .avatar, .topbar .user-pill span { display: none; }
   .topbar .user-pill { flex: none; }
   .topbar .filter-bar { order: 3; flex: 1 1 100%; }
   .topbar > .btn-primary { position: fixed; right: 14px; bottom: 18px; z-index: 40; border-radius: 999px; padding: 12px 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
@@ -23,6 +24,7 @@
   /* TASK board: stack the priority list above the board, board as one vertical list */
   .board-with-side { flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .board-with-side .board-scroll { flex: none; overflow: visible; padding: 8px 10px 40px; }
+  .board-with-side .priority-panel { order: -1; }
   .priority-panel { width: 100%; flex: none; max-height: 55vh; border-left: 0; border-bottom: 1px solid var(--line); padding: 10px 12px; }
   .priority-panel.collapsed { max-height: none; padding: 8px 12px; }
   .priority-hint { margin-bottom: 8px; }
