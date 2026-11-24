@@ -10,7 +10,7 @@ function jobIdClass(jobId) {
   return jobId.split('-')[0].toLowerCase(); // 'app','est','pay'
 }
 
-export default function JobCard({ card, config, dragging, onClick, onDragStart, onDragEnd }) {
+export default function JobCard({ card, config, dragging, onClick, onDragStart, onDragEnd, onToggleDone }) {
   const prio = prioMeta(config, card.priority);
   const title = (card.fields && card.fields[config.titleField]) || '(no title)';
   const allDefs = config.fieldGroups.flatMap(g => g.fields);
@@ -54,6 +54,11 @@ export default function JobCard({ card, config, dragging, onClick, onDragStart, 
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
+      {isTaskBoard && onToggleDone && (
+        <label className="done-check" onClick={e => e.stopPropagation()} title={card.status === 'completed' ? 'Mark not done' : 'Mark done'}>
+          <input type="checkbox" checked={card.status === 'completed'} onChange={() => onToggleDone()} aria-label="Mark done" />
+        </label>
+      )}
       {card.jobId && <div className={`job-id-badge ${jobIdClass(card.jobId)}`}>{card.jobId}</div>}
       <div className="address">{title}</div>
       {previewLines}
