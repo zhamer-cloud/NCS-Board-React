@@ -1,3 +1,5 @@
+Current URL: https://raw.githubusercontent.com/zhamer-cloud/NCS-Board-React/main/src/App.jsx?token=GHSAT0AAAAAAER2IQZ443N37FAJ6QDVUK6U2YF43HQ
+
 // App.jsx — ported from public/js/app.js: manages views (Dashboard / Board /
 // Coming Soon), nav, filters, and wires the board + modal together.
 import { useEffect, useState, useCallback } from 'react';
@@ -55,7 +57,7 @@ function AppInner() {
         setBoardsList([...boards, TASK_NAV_ENTRY]);
         setUsers(allUsers);
         const startBoard = new URLSearchParams(window.location.search).get('board');
-        if (startBoard) await activateBoard(startBoard, boards);
+        if (startBoard) { await activateBoard(startBoard, boards); try { const [g, t] = await Promise.all([fetchGlobalDashboard(), fetchTaskSummary()]); setGlobalDashboard(g); setTaskSummary(t); } catch (e) { /* dashboard data loads on demand */ } }
         else await activateDashboard();
       } catch (err) {
         toast(err.message, true);
@@ -75,7 +77,8 @@ function AppInner() {
     } catch (err) { toast(err.message, true); }
   }
 
-  async function activateBoard(boardId, boardsOverride) {
+  async function activateBoard(boardId, boardsOverride, initialFilters) {
+    if (boardsOverride && !Array.isArray(boardsOverride)) { initialFilters = boardsOverride; boardsOverride = undefined; }
     const list = boardsOverride || boardsList;
     const board = list.find(b => b.id === boardId);
     if (!board) return;
@@ -89,7 +92,7 @@ function AppInner() {
     const isTask = boardId === 'task';
     const bc = isTask ? { ...taskBoard, priorities: PRIORITIES } : { ...getBoard(boardId), priorities: PRIORITIES };
     setConfig(bc);
-    setFilters(EMPTY_FILTERS);
+    setFilters({ ...EMPTY_FILTERS, ...(initialFilters || {}) });
 
     try {
       const [cardRows, dash] = isTask
