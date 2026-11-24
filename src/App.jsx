@@ -144,6 +144,13 @@ function AppInner() {
     }
   }
 
+  // Tick / untick a task: moves it to Completed (or back to To Do). Logged as a move in the task's activity.
+  function handleToggleDone(taskId) {
+    const t = cards.find(c => c.id === taskId);
+    if (!t) return;
+    return handleCardMove(taskId, { status: t.status === 'completed' ? 'to_do' : 'completed' });
+  }
+
   // Priority list (TASK board). Moves one open task up/down, then renumbers the
   // open tasks 1000, 2000, ... in list order and saves only the ones that changed.
   // Uses the existing "order" column, so column order on the board follows it too.
@@ -226,9 +233,10 @@ function AppInner() {
                     config={config} cards={cards} filters={filters}
                     onCardClick={openEdit}
                     onCardMove={handleCardMove}
+                    onToggleDone={handleToggleDone}
                     onQuickAdd={status => openCreate({ status })}
                   />
-                  <PriorityPanel tasks={cards} onMove={handlePriorityMove} onOpen={openEdit} />
+                  <PriorityPanel tasks={cards} onMove={handlePriorityMove} onOpen={openEdit} onToggleDone={handleToggleDone} />
                 </div>
               ) : (
                 <BoardView
