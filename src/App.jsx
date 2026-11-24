@@ -1,5 +1,3 @@
-Current URL: https://raw.githubusercontent.com/zhamer-cloud/NCS-Board-React/main/src/App.jsx?token=GHSAT0AAAAAAER2IQZ443N37FAJ6QDVUK6U2YF43HQ
-
 // App.jsx — ported from public/js/app.js: manages views (Dashboard / Board /
 // Coming Soon), nav, filters, and wires the board + modal together.
 import { useEffect, useState, useCallback } from 'react';
