@@ -100,6 +100,9 @@ export default function BoardView({ config, cards, filters, onCardClick, onCardM
                   });
                 }}
               >
+                {inCol.length > 0 && (
+                  <div className="col-mobile-head"><span>{col.label}</span><span className="count">{inCol.length}</span></div>
+                )}
                 {inCol.length
                   ? inCol.map(c => (
                     <JobCard
