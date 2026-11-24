@@ -44,7 +44,7 @@ export default function JobCard({ card, config, dragging, onClick, onDragStart, 
   return (
     <div
       className={`job-card prio-${prio.id}${dragging ? ' dragging' : ''}`}
-      draggable="true"
+      draggable={typeof window !== 'undefined' && !window.matchMedia('(max-width: 768px)').matches}
       data-id={card.id}
       tabIndex={0}
       role="button"
