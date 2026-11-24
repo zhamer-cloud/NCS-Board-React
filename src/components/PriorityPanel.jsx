@@ -9,7 +9,7 @@ import '../styles/priority-panel.css';
 
 const isPhone = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
 
-export default function PriorityPanel({ tasks, onMove, onOpen }) {
+export default function PriorityPanel({ tasks, onMove, onOpen, onToggleDone }) {
   const [panelOpen, setPanelOpen] = useState(() => !isPhone());
   const [expandedId, setExpandedId] = useState(null);
   const open = tasks
@@ -33,6 +33,11 @@ export default function PriorityPanel({ tasks, onMove, onOpen }) {
         <ol className="priority-list">
           {open.map((t, i) => (
             <li key={t.id} className={`priority-item${expandedId === t.id ? ' expanded' : ''}`}>
+              {onToggleDone && (
+                <label className="done-check inline" title="Mark done">
+                  <input type="checkbox" checked={false} onChange={() => onToggleDone(t.id)} aria-label="Mark done" />
+                </label>
+              )}
               <span className="priority-rank">{i + 1}</span>
               <button type="button" className="priority-body" onClick={() => handleRow(t.id)} title="Show task">
                 <span className="priority-title">{t.fields?.title || '(untitled)'}</span>
