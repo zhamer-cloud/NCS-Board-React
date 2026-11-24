@@ -24,11 +24,11 @@ export default function DashboardView({ data, taskSummary, onOpenBoard }) {
               <div className="dbc-head">
                 <div className="dbc-title"><span>{b.navIcon || ''}</span>{b.label}</div>
                 {!b.comingSoon
-                  ? <span className="dbc-goto" onClick={() => onOpenBoard(b.boardId)}>Open →</span>
+                  ? <span className="dbc-goto" onClick={() => onOpenBoard(b.boardId, {})}>Open →</span>
                   : <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Coming soon</span>}
               </div>
-              <div className="dbc-open">{b.totalOpen}</div>
-              <div className="dbc-open-label" style={{ marginBottom: 10 }}>open jobs</div>
+              <div className="dbc-open" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { bucket: 'open' })}>{b.totalOpen}</div>
+              <div className="dbc-open-label" style={{ marginBottom: 10, cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { bucket: 'open' })}>open jobs</div>
               <div className="dbc-status-list">
                 {statusEntries.length
                   ? statusEntries.map(([sid, count]) => {
@@ -36,7 +36,7 @@ export default function DashboardView({ data, taskSummary, onOpenBoard }) {
                     const label = col ? col.label : sid.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
                     const pct = Math.round(count / maxCount * 100);
                     return (
-                      <div className="dbc-status-row" key={sid}>
+                      <div className="dbc-status-row" key={sid} style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { status: sid })}>
                         <span className="name">{label}</span>
                         <div className="dbc-bar-wrap"><div className="dbc-bar" style={{ width: `${pct}%` }}></div></div>
                         <span className="count">{count}</span>
@@ -47,11 +47,11 @@ export default function DashboardView({ data, taskSummary, onOpenBoard }) {
               </div>
               {b.boardId === 'payment' && (
                 <div className="dash-payment-metrics">
-                  <div className="pay-metric"><div className="pm-num amount">{fmtAmount(b.totalOutstandingAmount)}</div><div className="pm-label">Outstanding</div></div>
-                  <div className="pay-metric"><div className="pm-num">{b.paymentsRequestedCount || 0}</div><div className="pm-label">Requested</div></div>
-                  <div className="pay-metric"><div className="pm-num">{b.paymentsPendingCount || 0}</div><div className="pm-label">Pending</div></div>
-                  <div className="pay-metric"><div className="pm-num">{b.paidThisMonthCount || 0}</div><div className="pm-label">Paid This Month</div></div>
-                  <div className="pay-metric"><div className="pm-num amount">{fmtAmount(b.paidThisMonthAmount)}</div><div className="pm-label">Paid Amount</div></div>
+                  <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { bucket: 'outstanding' })}><div className="pm-num amount">{fmtAmount(b.totalOutstandingAmount)}</div><div className="pm-label">Outstanding</div></div>
+                  <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { status: 'payment_requested' })}><div className="pm-num">{b.paymentsRequestedCount || 0}</div><div className="pm-label">Requested</div></div>
+                  <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { bucket: 'outstanding' })}><div className="pm-num">{b.paymentsPendingCount || 0}</div><div className="pm-label">Pending</div></div>
+                  <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { bucket: 'paid_month' })}><div className="pm-num">{b.paidThisMonthCount || 0}</div><div className="pm-label">Paid This Month</div></div>
+                  <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(b.boardId, { bucket: 'paid_month' })}><div className="pm-num amount">{fmtAmount(b.paidThisMonthAmount)}</div><div className="pm-label">Paid Amount</div></div>
                 </div>
               )}
             </div>
@@ -62,15 +62,15 @@ export default function DashboardView({ data, taskSummary, onOpenBoard }) {
           <div className="dash-board-card">
             <div className="dbc-head">
               <div className="dbc-title"><span>✅</span>TASK</div>
-              <span className="dbc-goto" onClick={() => onOpenBoard('task')}>Open →</span>
+              <span className="dbc-goto" onClick={() => onOpenBoard('task', {})}>Open →</span>
             </div>
-            <div className="dbc-open">{taskSummary.open}</div>
-            <div className="dbc-open-label" style={{ marginBottom: 10 }}>open tasks</div>
+            <div className="dbc-open" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard('task', { bucket: 'open' })}>{taskSummary.open}</div>
+            <div className="dbc-open-label" style={{ marginBottom: 10, cursor: 'pointer' }} onClick={() => onOpenBoard('task', { bucket: 'open' })}>open tasks</div>
             <div className="dash-task-metrics">
-              <div className="pay-metric"><div className="pm-num">{taskSummary.open}</div><div className="pm-label">Open</div></div>
-              <div className="pay-metric"><div className="pm-num">{taskSummary.dueToday}</div><div className="pm-label">Due Today</div></div>
-              <div className="pay-metric"><div className="pm-num overdue">{taskSummary.overdue}</div><div className="pm-label">Overdue</div></div>
-              <div className="pay-metric"><div className="pm-num">{taskSummary.completed}</div><div className="pm-label">Completed</div></div>
+              <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard('task', { bucket: 'open' })}><div className="pm-num">{taskSummary.open}</div><div className="pm-label">Open</div></div>
+              <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard('task', { bucket: 'due_today' })}><div className="pm-num">{taskSummary.dueToday}</div><div className="pm-label">Due Today</div></div>
+              <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard('task', { bucket: 'overdue' })}><div className="pm-num overdue">{taskSummary.overdue}</div><div className="pm-label">Overdue</div></div>
+              <div className="pay-metric" style={{ cursor: 'pointer' }} onClick={() => onOpenBoard('task', { status: 'completed' })}><div className="pm-num">{taskSummary.completed}</div><div className="pm-label">Completed</div></div>
             </div>
           </div>
         )}
@@ -84,7 +84,7 @@ export default function DashboardView({ data, taskSummary, onOpenBoard }) {
             const rawTitle = a.cardTitle || '';
             const titleText = rawTitle.slice(0, 40) + (rawTitle.length > 40 ? '…' : '');
             return (
-              <div className="act-row" key={a.id || i}>
+              <div className="act-row" key={a.id || i} style={{ cursor: 'pointer' }} onClick={() => onOpenBoard(a.board, {})}>
                 <span className="act-who">{a.author}</span>
                 <span className="act-board">{bl}</span>
                 <span className="act-body"><strong>{a.cardJobId ? a.cardJobId + ' · ' : ''}{titleText}</strong> — {a.detail}</span>
