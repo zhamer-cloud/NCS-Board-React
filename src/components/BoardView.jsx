@@ -39,7 +39,7 @@ function getDropTarget(colEl, clientY, draggingId) {
   return null;
 }
 
-export default function BoardView({ config, cards, filters, onCardClick, onCardMove, onQuickAdd }) {
+export default function BoardView({ config, cards, filters, onCardClick, onCardMove, onQuickAdd, onToggleDone }) {
   const [draggingId, setDraggingId] = useState(null);
   const [dragOverCol, setDragOverCol] = useState(null);
 
@@ -106,6 +106,7 @@ export default function BoardView({ config, cards, filters, onCardClick, onCardM
                       key={c.id} card={c} config={config}
                       dragging={draggingId === c.id}
                       onClick={() => onCardClick(c.id)}
+                      onToggleDone={onToggleDone ? () => onToggleDone(c.id) : undefined}
                       onDragStart={e => { setDraggingId(c.id); e.dataTransfer.setData('text/plain', c.id); e.dataTransfer.effectAllowed = 'move'; }}
                       onDragEnd={() => setDraggingId(null)}
                     />
