@@ -225,7 +225,10 @@ function AppInner() {
             <>
               <DashboardStrip
                 config={config} dashboard={dashboard} filters={filters}
-                onToggleStatus={s => setFilters(f => ({ ...f, status: f.status === s ? '' : s }))}
+                onToggleStatus={s => {
+                  setFilters(f => ({ ...f, status: f.status === s ? '' : s }));
+                  if (window.matchMedia('(max-width: 768px)').matches) setTimeout(() => { const el = document.querySelector('.board-with-side .board-scroll'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 80);
+                }}
               />
               {activeBoardId === 'task' ? (
                 <div className="board-with-side">
